@@ -1,6 +1,6 @@
 "use client";
 
-import React,{useState, useTransition} from "react";
+import React, { useState, useTransition } from "react";
 import { CardWrapper } from "./CardWrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,13 +19,18 @@ import { Button } from "../ui/button";
 import { login } from "@/actions/login";
 import { FormError } from "../FormError";
 import { FormSuccess } from "../FormSuccess";
+import { useSearchParams } from "next/navigation";
 
 export const LoginForm = () => {
+  const [isPending, startTransaction] = useTransition();
+  const [error, setError] = useState<string | undefined>();
+  const [success, setSuccess] = useState<string | undefined>();
 
-  const [isPending,startTransaction] = useTransition()
-  const [error,setError] = useState<string | undefined>()
-  const [success,setSuccess] = useState<string | undefined>()
-
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider"
+      : "";
 
   const form = useForm<LoginType>({
     resolver: zodResolver(LoginSchema),
@@ -36,14 +41,14 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (value: LoginType) => {
-    setError(undefined)
-    setSuccess(undefined)
-    startTransaction(()=>{
-      login(value).then((res)=>{
-        setError(res?.error)
-        setSuccess(res?.success)
-      })
-    })
+    setError(undefined);
+    setSuccess(undefined);
+    startTransaction(() => {
+      login(value).then((res) => {
+        setError(res?.error);
+        setSuccess(res?.success);
+      });
+    });
   };
 
   return (
@@ -81,15 +86,20 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="******" type="password" disabled={isPending}/>
+                    <Input
+                      {...field}
+                      placeholder="******"
+                      type="password"
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          {error && <FormError message={error}/>}
-          {success && <FormSuccess message={success}/>}
+          <FormError message={error || urlError} />
+          <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
             Login
           </Button>
