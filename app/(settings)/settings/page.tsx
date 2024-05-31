@@ -1,14 +1,19 @@
-import { auth } from '@/auth'
-import React from 'react'
+import { logout } from "@/actions/logout";
+import { auth, signOut } from "@/auth";
+import { Button } from "@/components/ui/button";
+import React from "react";
 
-const SettingsPage = () => {
-
-  const session = auth
-
+const SettingsPage = async () => {
+  const session = await auth();
 
   return (
-    <div>SettingsPage</div>
-  )
-}
+    <div>
+      {JSON.stringify(session)}
+      <form action={logout}>
+        <Button type="submit">Singout</Button>
+      </form>
+    </div>
+  );
+};
 
-export default SettingsPage
+export default SettingsPage;

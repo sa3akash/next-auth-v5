@@ -40,8 +40,8 @@ export const LoginForm = () => {
     setSuccess(undefined)
     startTransaction(()=>{
       login(value).then((res)=>{
-        setError(res.error)
-        setSuccess(res.success)
+        setError(res?.error)
+        setSuccess(res?.success)
       })
     })
   };
